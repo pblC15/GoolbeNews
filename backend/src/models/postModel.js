@@ -140,13 +140,18 @@ export async function listRecentPosts(db, { limit = 12, categorySlug, q } = {}) 
 
 export async function listAdminPosts(db) {
   const [rows] = await db.query(`
-    SELECT p.id,p.title,p.slug,p.cover_url,p.excerpt,p.published,p.published_at,p.created_at,p.updated_at,
+    SELECT p.id,p.title,p.slug,p.cover_url,p.excerpt,p.published,p.published_at,p.created_at,p.updated_at,p.views,
            c.name AS category_name,u.name AS author_name
       FROM posts p
  LEFT JOIN categories c ON c.id=p.category_id
  LEFT JOIN users u ON u.id=p.user_id
   ORDER BY p.created_at DESC,p.id DESC`)
   return rows
+}
+
+/** Incrementa o contador de visualizações de um post (fire-and-forget) */
+export async function incrementPostViews(db, id) {
+  await db.query('UPDATE posts SET views = views + 1 WHERE id = ?', [id])
 }
 
 export async function getPostByIdAdmin(db, id) {

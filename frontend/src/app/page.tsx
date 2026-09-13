@@ -10,7 +10,7 @@ async function json(url: string) {
 }
 
 function date(d?: string) {
-  return d ? new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d)) : ''
+  return d ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d)) : ''
 }
 
 function AdSlot({ label, className = '' }: { label: string; className?: string }) {
@@ -125,7 +125,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
 
       <footer className="border-t py-8 text-sm text-slate-500">
         <div className="flex flex-wrap justify-between gap-3">
-          <p>© {new Date().getFullYear()} MeuNews</p>
+          <p>© {new Date().getFullYear()} GoolbeNews</p>
           <p>Informação organizada para leitura rápida e clara.</p>
         </div>
       </footer>

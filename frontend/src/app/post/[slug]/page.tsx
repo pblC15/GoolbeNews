@@ -1,12 +1,46 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_BASE ?? 'http://localhost:3000'
 
 async function getPost(slug: string) {
   const r = await fetch(`${API}/api/posts/${slug}`, { next: { revalidate } })
   return r.ok ? r.json() : null
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const p = await getPost(slug)
+  if (!p) return {}
+
+  const title = p.title
+  const description = p.excerpt || `Leia "${p.title}" no GoolbeNews.`
+  const url = `${SITE_URL}/post/${p.slug}`
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      url,
+      title,
+      description,
+      images: p.cover_url ? [{ url: p.cover_url }] : undefined,
+      publishedTime: p.published_at || undefined,
+      authors: p.author_name ? [p.author_name] : undefined,
+      section: p.category_name || undefined,
+    },
+    twitter: {
+      card: p.cover_url ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      images: p.cover_url ? [p.cover_url] : undefined,
+    },
+  }
 }
 
 async function getRelated(categorySlug?: string, excludeId?: number) {
@@ -113,11 +147,30 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!p) notFound()
   const related = await getRelated(p.category_slug, p.id)
   const published = p.published_at
-    ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(p.published_at))
+    ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(p.published_at))
     : ''
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: p.title,
+    description: p.excerpt || undefined,
+    image: p.cover_url ? [p.cover_url] : undefined,
+    datePublished: p.published_at || undefined,
+    dateModified: p.updated_at || p.published_at || undefined,
+    author: [{ '@type': 'Person', name: p.author_name || 'Redação GoolbeNews' }],
+    publisher: {
+      '@type': 'Organization',
+      name: 'GoolbeNews',
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
+    },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/post/${p.slug}` },
+    articleSection: p.category_name || undefined,
+  }
 
   return (
     <article>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="mx-auto max-w-4xl pb-7 pt-4">
         <Link href={`/categoria/${p.category_slug}`} className="text-xs font-black uppercase tracking-[.18em] text-sky-700">
           {p.category_name || 'Notícia'}
@@ -125,7 +178,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-[-.035em] text-slate-950 sm:text-6xl">{p.title}</h1>
         {p.excerpt && <p className="mt-5 text-xl leading-8 text-slate-600">{p.excerpt}</p>}
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-4 text-sm text-slate-500">
-          <span>Por <strong className="text-slate-800">{p.author_name || 'Redação MeuNews'}</strong></span>
+          <span>Por <strong className="text-slate-800">{p.author_name || 'Redação GoolbeNews'}</strong></span>
           {published && <span>{published}</span>}
         </div>
       </header>

@@ -4,8 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { HiOutlineHome, HiOutlineDocumentText, HiOutlineFolder, HiOutlineUsers, HiOutlineLogout, HiOutlinePlusCircle, HiOutlineExternalLink } from 'react-icons/hi'
 import { adminApi } from '@/lib/adminApi'
-
-const SITE_BASE = process.env.NEXT_PUBLIC_SITE_BASE ?? 'http://localhost:3000'
+import { getSiteBase } from '@/lib/site'
 
 const nav = [
   ['/admin', 'Visão geral', HiOutlineHome],
@@ -18,8 +17,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const path = usePathname()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [siteBase, setSiteBase] = useState('')
 
-  useEffect(() => { adminApi('/auth/me').then((d) => setUser(d.user)).catch(() => {}) }, [])
+  useEffect(() => {
+    adminApi('/auth/me').then((d) => setUser(d.user)).catch(() => {})
+    setSiteBase(getSiteBase())
+  }, [])
 
   function logout() {
     localStorage.removeItem('token')
@@ -31,7 +34,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     <div className="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[250px_1fr]">
       <aside className="border-r bg-slate-950 text-white lg:sticky lg:top-0 lg:min-h-screen">
         <div className="flex items-center justify-between px-5 py-5">
-          <Link href="/admin" className="text-xl font-black tracking-tight">MeuNews <span className="text-sky-400">Admin</span></Link>
+          <Link href="/admin" className="text-xl font-black tracking-tight">Goolbe<span className="text-sky-400">News</span> Admin</Link>
         </div>
         <nav className="px-3 pb-5">
           {nav.map(([href, label, Icon]) => (
@@ -40,7 +43,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             </Link>
           ))}
           <a
-            href={SITE_BASE}
+            href={siteBase}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 px-3 py-3 text-sm text-slate-300 hover:bg-white/5 hover:text-white"
@@ -57,7 +60,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </div>
           <div className="flex items-center gap-2">
             <a
-              href={SITE_BASE}
+              href={siteBase}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 sm:flex"

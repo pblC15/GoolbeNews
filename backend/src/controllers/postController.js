@@ -6,6 +6,7 @@ import {
   listRecentPosts,
   getPostBySlugWithCategory,
   listAdminPosts, getPostByIdAdmin, deletePost,
+  incrementPostViews,
 } from '../models/postModel.js'
 import { replaceBlocks, getBlocks } from '../models/postBlockModel.js'
 
@@ -108,6 +109,10 @@ export async function bySlug(req, res) {
 
     const blocks = await getBlocks(req.db, post.id)
     console.log('[API bySlug]', slug, 'retornando blocks:', blocks.length)
+
+    // conta a visualização sem atrasar a resposta ao leitor
+    incrementPostViews(req.db, post.id).catch(e => console.error('[views] erro ao incrementar', e))
+
     res.json({ ...post, blocks })
   } catch (e) {
     console.error('[API bySlug] ERRO:', e) // <— adicione isto

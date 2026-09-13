@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { HiMenu, HiSearch, HiOutlineViewGridAdd } from 'react-icons/hi'
 import CategoryDrawer from './CategoryDrawer'
+import HeaderLiveInfo from './HeaderLiveInfo'
 
 export default function Header() {
   const [open, setOpen] = useState(false)
@@ -19,14 +20,14 @@ export default function Header() {
   return (
     <>
       <div className="bg-slate-950 text-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs">
-          <span>Notícias com contexto, sem ruído.</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 text-xs">
+          <HeaderLiveInfo />
           {isAdmin ? (
-            <Link href="/admin" className="flex items-center gap-1.5 rounded-full bg-sky-600/90 px-3 py-1 font-semibold text-white hover:bg-sky-500">
-              <HiOutlineViewGridAdd className="h-3.5 w-3.5" /> Voltar ao painel
+            <Link href="/admin" className="flex shrink-0 items-center gap-1.5 rounded-full bg-sky-600/90 px-3 py-1 font-semibold text-white hover:bg-sky-500">
+              <HiOutlineViewGridAdd className="h-3.5 w-3.5" /> Editora
             </Link>
           ) : (
-            <Link href="/admin/login" className="text-slate-300 hover:text-white">Área editorial</Link>
+            <Link href="/admin/login" className="shrink-0 text-slate-300 hover:text-white">Área editorial</Link>
           )}
         </div>
       </div>
@@ -36,7 +37,7 @@ export default function Header() {
             <HiMenu className="h-6 w-6" />
           </button>
           <Link href="/" className="mr-auto text-2xl font-black tracking-[-.04em] text-slate-950">
-            Meu<span className="text-sky-600">News</span>
+            Goolbe<span className="text-sky-600">News</span>
           </Link>
           <form action="/" className="relative hidden sm:block">
             <HiSearch className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />

@@ -1,6 +1,7 @@
 // front/src/app/categoria/[slug]/page.tsx
 import PostCard from '@/components/PostCard'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -37,6 +38,20 @@ async function fetchCategoryPosts(slug: string): Promise<Post[]> {
   }
 
   return []
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const posts = await fetchCategoryPosts(slug)
+  const name = posts[0]?.category_name || slug
+  const title = `Notícias de ${name}`
+  const description = `Acompanhe as últimas notícias de ${name} no GoolbeNews.`
+  return {
+    title,
+    description,
+    alternates: { canonical: `/categoria/${slug}` },
+    openGraph: { title, description, type: 'website' },
+  }
 }
 
 export default async function CategoryPage({
