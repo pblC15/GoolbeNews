@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import PostCard from '@/components/PostCard'
+import NewsletterSignup from '@/components/NewsletterSignup'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -39,6 +40,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         ) : (
           <div className="rounded-2xl border bg-white p-10 text-center text-slate-500">Nenhuma notícia encontrada. Tente outras palavras.</div>
         )}
+        <NewsletterSignup className="mt-4" />
       </div>
     )
   }
@@ -123,12 +125,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         </section>
       )}
 
-      <footer className="border-t py-8 text-sm text-slate-500">
-        <div className="flex flex-wrap justify-between gap-3">
-          <p>© {new Date().getFullYear()} GoolbeNews</p>
-          <p>Informação organizada para leitura rápida e clara.</p>
-        </div>
-      </footer>
+      <NewsletterSignup source="home" variant="dark" />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 // front/src/app/categoria/[slug]/page.tsx
 import PostCard from '@/components/PostCard'
+import NewsletterSignup from '@/components/NewsletterSignup'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -69,8 +70,11 @@ export default async function CategoryPage({
   // Ou uma mensagem amigável:
   if (!posts.length) {
     return (
-      <div className="py-10 text-center text-sm text-gray-600">
-        Nenhum post encontrado na categoria <span className="font-semibold">{slug}</span>.
+      <div className="space-y-8 py-6">
+        <div className="py-10 text-center text-sm text-gray-600">
+          Nenhum post encontrado na categoria <span className="font-semibold">{slug}</span>.
+        </div>
+        <NewsletterSignup source={`categoria-${slug}`} />
       </div>
     )
   }
@@ -79,13 +83,21 @@ export default async function CategoryPage({
   const heading = posts[0]?.category_name || slug
 
   return (
-    <section className="space-y-4">
-      <h1 className="text-2xl font-bold capitalize">{heading}</h1>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((p) => (
-          <PostCard key={p.id} post={p} />
-        ))}
+    <section className="space-y-10">
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold capitalize">{heading}</h1>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((p) => (
+            <PostCard key={p.id} post={p} />
+          ))}
+        </div>
       </div>
+
+      <NewsletterSignup
+        title={`Não perca nenhuma notícia de ${heading}`}
+        description="Inscreva-se e receba um email sempre que publicarmos algo novo nesta categoria."
+        source={`categoria-${slug}`}
+      />
     </section>
   )
 }

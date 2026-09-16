@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import ShareButtons from '@/components/ShareButtons'
+import NewsletterSignup from '@/components/NewsletterSignup'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -137,8 +139,8 @@ function Blocks({ blocks = [] }: { blocks?: any[] }) {
   )
 }
 
-function AdSlot({ label }: { label: string }) {
-  return <div className="ad-slot my-2">{label}</div>
+function AdSlot({ label, className = '' }: { label: string; className?: string }) {
+  return <div className={`ad-slot my-2 ${className}`}>{label}</div>
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -149,6 +151,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const published = p.published_at
     ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(p.published_at))
     : ''
+  const postUrl = `${SITE_URL}/post/${p.slug}`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -181,6 +184,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           <span>Por <strong className="text-slate-800">{p.author_name || 'Redação GoolbeNews'}</strong></span>
           {published && <span>{published}</span>}
         </div>
+        <ShareButtons url={postUrl} title={p.title} className="mt-5 border-t pt-5" />
       </header>
 
       {p.cover_url && (
@@ -192,7 +196,17 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div className="mx-auto max-w-3xl py-8">
         <AdSlot label="Espaço publicitário" />
         {p.blocks?.length ? <Blocks blocks={p.blocks} /> : <p className="text-slate-500">Conteúdo indisponível.</p>}
-        <AdSlot label="Espaço publicitário" />
+
+        <ShareButtons url={postUrl} title={p.title} className="mt-8 border-t pt-6" />
+
+        <NewsletterSignup
+          className="mt-10"
+          title="Gostou desta notícia?"
+          description="Inscreva-se para receber as próximas publicações do GoolbeNews diretamente no seu email."
+          source={`post-${p.slug}`}
+        />
+
+        <AdSlot label="Espaço publicitário" className="mt-8" />
 
         {related.length > 0 && (
           <section className="mt-14 border-t pt-8">

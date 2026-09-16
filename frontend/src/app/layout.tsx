@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_BASE ?? 'http://localhost:3000'
 const SITE_NAME = 'GoolbeNews'
@@ -39,9 +40,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className="min-h-screen bg-gray-50">
+      <body className="flex min-h-screen flex-col bg-gray-50">
         <Header />
-        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
+        <Footer />
       </body>
     </html>
   );

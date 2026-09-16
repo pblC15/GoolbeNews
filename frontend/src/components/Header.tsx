@@ -15,7 +15,9 @@ export default function Header() {
     setIsAdmin(typeof window !== 'undefined' && !!localStorage.getItem('token'))
   }, [pathname])
 
-  if (pathname.startsWith('/admin')) return null
+  // Mantém o cabeçalho fora do painel administrativo, exceto na tela de login,
+  // onde o utilizador precisa conseguir voltar/navegar pelo site público.
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') return null
 
   return (
     <>
