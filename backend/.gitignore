@@ -6,6 +6,9 @@ migrations
 .next/
 frontend/.next/
 
+# Uploads de produção
+backend/uploads/
+
 # Node
 node_modules/
 frontend/node_modules/
@@ -16,6 +19,8 @@ backend/node_modules/
 .env.local
 .env.production
 .env.development
+frontend/.env*
+backend/.env*
 
 # Logs
 *.log
