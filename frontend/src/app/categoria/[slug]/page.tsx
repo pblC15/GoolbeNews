@@ -1,6 +1,8 @@
 // front/src/app/categoria/[slug]/page.tsx
 import PostCard from '@/components/PostCard'
 import NewsletterSignup from '@/components/NewsletterSignup'
+import AdUnit from '@/components/ads/AdUnit'
+import { AD_SLOTS } from '@/lib/ads'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -87,11 +89,23 @@ export default async function CategoryPage({
       <div className="space-y-4">
         <h1 className="text-2xl font-bold capitalize">{heading}</h1>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((p) => (
+          {posts.slice(0, 6).map((p) => (
             <PostCard key={p.id} post={p} />
           ))}
         </div>
+        {posts.length > 6 && (
+          <>
+            <AdUnit slot={AD_SLOTS.categoryFeed} className="my-2" />
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.slice(6).map((p) => (
+                <PostCard key={p.id} post={p} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
+      {posts.length <= 6 && <AdUnit slot={AD_SLOTS.categoryFeed} />}
 
       <NewsletterSignup
         title={`Não perca nenhuma notícia de ${heading}`}

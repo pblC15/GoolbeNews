@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import PostCard from '@/components/PostCard'
 import NewsletterSignup from '@/components/NewsletterSignup'
+import AdUnit from '@/components/ads/AdUnit'
+import { AD_SLOTS } from '@/lib/ads'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -12,10 +14,6 @@ async function json(url: string) {
 
 function date(d?: string) {
   return d ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(d)) : ''
-}
-
-function AdSlot({ label, className = '' }: { label: string; className?: string }) {
-  return <div className={`ad-slot ${className}`}>{label}</div>
 }
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -101,7 +99,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         )}
       </section>
 
-      {hero && <AdSlot label="Espaço publicitário" />}
+      {hero && <AdUnit slot={AD_SLOTS.homeTop} />}
 
       {latest.length > 0 && (
         <section>
@@ -116,7 +114,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
           </div>
           {latest.length > 6 && (
             <>
-              <AdSlot label="Espaço publicitário" className="my-8" />
+              <AdUnit slot={AD_SLOTS.homeFeed} className="my-8" />
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {latest.slice(6).map((p: any) => <PostCard key={p.id} post={p} />)}
               </div>

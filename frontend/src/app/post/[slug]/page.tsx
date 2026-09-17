@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareButtons from '@/components/ShareButtons'
 import NewsletterSignup from '@/components/NewsletterSignup'
+import AdUnit from '@/components/ads/AdUnit'
+import { AD_SLOTS } from '@/lib/ads'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -139,10 +141,6 @@ function Blocks({ blocks = [] }: { blocks?: any[] }) {
   )
 }
 
-function AdSlot({ label, className = '' }: { label: string; className?: string }) {
-  return <div className={`ad-slot my-2 ${className}`}>{label}</div>
-}
-
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const p = await getPost(slug)
@@ -194,7 +192,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       )}
 
       <div className="mx-auto max-w-3xl py-8">
-        <AdSlot label="Espaço publicitário" />
+        <AdUnit slot={AD_SLOTS.postTop} layout="in-article" className="my-6" />
         {p.blocks?.length ? <Blocks blocks={p.blocks} /> : <p className="text-slate-500">Conteúdo indisponível.</p>}
 
         <ShareButtons url={postUrl} title={p.title} className="mt-8 border-t pt-6" />
@@ -206,7 +204,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           source={`post-${p.slug}`}
         />
 
-        <AdSlot label="Espaço publicitário" className="mt-8" />
+        <AdUnit slot={AD_SLOTS.postBottom} layout="in-article" className="mt-8" />
 
         {related.length > 0 && (
           <section className="mt-14 border-t pt-8">
