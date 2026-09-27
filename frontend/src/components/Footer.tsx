@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { HiOutlineMail } from 'react-icons/hi'
 import { api } from '@/lib/api'
+import { INSTITUTIONAL_LINKS } from '@/lib/site'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -48,16 +49,20 @@ export default function Footer() {
           <div>
             <p className="text-xs font-black uppercase tracking-[.15em] text-slate-400">Institucional</p>
             <ul className="mt-4 space-y-2.5">
-              <li>
-                <Link href="/" className="text-sm text-slate-600 hover:text-sky-700">
-                  Página inicial
-                </Link>
-              </li>
+              {INSTITUTIONAL_LINKS.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-sm text-slate-600 hover:text-sky-700">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+              {/* [AREA-EDITORIAL] Link escondido temporariamente. Para reativar, descomente:
               <li>
                 <Link href="/admin/login" className="text-sm text-slate-600 hover:text-sky-700">
                   Área editorial
                 </Link>
               </li>
+              */}
             </ul>
           </div>
 
@@ -65,14 +70,19 @@ export default function Footer() {
             <p className="text-xs font-black uppercase tracking-[.15em] text-slate-400">Newsletter</p>
             <p className="mt-4 flex items-start gap-2 text-sm leading-6 text-slate-500">
               <HiOutlineMail className="mt-0.5 h-4 w-4 shrink-0 text-sky-600" />
-              Inscreva-se em qualquer notícia do site para receber as próximas publicações por email.
+              Inscreva-se na página inicial ou no final de qualquer notícia para receber as próximas publicações por email.
             </p>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} GoolbeNews. Todos os direitos reservados.</p>
-          <p>Informação organizada para leitura rápida e clara.</p>
+          <p>
+            Desenvolvido por{' '}
+            <a href="https://agenciagoolbe.site" target="_blank" rel="noopener" className="font-semibold text-slate-500 hover:text-sky-700">
+              AG (Agência Goolbe)
+            </a>
+          </p>
         </div>
       </div>
     </footer>

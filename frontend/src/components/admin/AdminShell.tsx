@@ -2,16 +2,19 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { HiOutlineHome, HiOutlineDocumentText, HiOutlineFolder, HiOutlineUsers, HiOutlineLogout, HiOutlinePlusCircle, HiOutlineExternalLink } from 'react-icons/hi'
+import { HiOutlineHome, HiOutlineDocumentText, HiOutlineFolder, HiOutlineUsers, HiOutlineLogout, HiOutlinePlusCircle, HiOutlineExternalLink, HiOutlineUserCircle, HiOutlineInbox } from 'react-icons/hi'
 import { adminApi } from '@/lib/adminApi'
 import { getSiteBase } from '@/lib/site'
 
+// adminOnly: itens escondidos para editores (a API também bloqueia o acesso)
 const nav = [
-  ['/admin', 'Visão geral', HiOutlineHome],
-  ['/admin/posts', 'Notícias', HiOutlineDocumentText],
-  ['/admin/categories', 'Categorias', HiOutlineFolder],
-  ['/admin/users', 'Utilizadores', HiOutlineUsers],
-] as const
+  { href: '/admin', label: 'Visão geral', Icon: HiOutlineHome },
+  { href: '/admin/posts', label: 'Notícias', Icon: HiOutlineDocumentText },
+  { href: '/admin/categories', label: 'Categorias', Icon: HiOutlineFolder, adminOnly: true },
+  { href: '/admin/users', label: 'Utilizadores', Icon: HiOutlineUsers, adminOnly: true },
+  { href: '/admin/messages', label: 'Mensagens', Icon: HiOutlineInbox, adminOnly: true },
+  { href: '/admin/profile', label: 'Meu perfil', Icon: HiOutlineUserCircle },
+]
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const path = usePathname()
@@ -20,8 +23,12 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const [siteBase, setSiteBase] = useState('')
 
   useEffect(() => {
-    adminApi('/auth/me').then((d) => setUser(d.user)).catch(() => {})
+    const loadUser = () => adminApi('/users/me').then(setUser).catch(() => {})
+    loadUser()
     setSiteBase(getSiteBase())
+    // a página "Meu perfil" dispara este evento ao salvar (atualiza a foto aqui)
+    window.addEventListener('profile-updated', loadUser)
+    return () => window.removeEventListener('profile-updated', loadUser)
   }, [])
 
   function logout() {
@@ -37,7 +44,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <Link href="/admin" className="text-xl font-black tracking-tight">Goolbe<span className="text-sky-400">News</span> Admin</Link>
         </div>
         <nav className="px-3 pb-5">
-          {nav.map(([href, label, Icon]) => (
+          {nav.filter((n) => !n.adminOnly || user?.role === 'admin').map(({ href, label, Icon }) => (
             <Link key={href} href={href} className={`mb-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm ${path === href || (href !== '/admin' && path.startsWith(href)) ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>
               <Icon className="h-5 w-5" />{label}
             </Link>
@@ -54,10 +61,17 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       </aside>
       <div className="min-w-0">
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 sm:px-7">
-          <div>
-            <p className="text-xs text-slate-500">Painel editorial</p>
-            <p className="font-semibold text-slate-900">{user?.name || 'Carregando...'}</p>
-          </div>
+          <Link href="/admin/profile" className="flex items-center gap-3 rounded-xl py-1 pr-2 hover:bg-slate-50" title="Meu perfil">
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover" />
+            ) : (
+              <HiOutlineUserCircle className="h-9 w-9 text-slate-300" />
+            )}
+            <div>
+              <p className="text-xs text-slate-500">Painel editorial</p>
+              <p className="font-semibold text-slate-900">{user?.name || 'Carregando...'}</p>
+            </div>
+          </Link>
           <div className="flex items-center gap-2">
             <a
               href={siteBase}

@@ -59,6 +59,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies AppPageConfig<"/admin/login">
 }
 
+// Validate ../../src/app/admin/messages/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/admin/messages/page.js")
+  handler satisfies AppPageConfig<"/admin/messages">
+}
+
 // Validate ../../src/app/admin/page.tsx
 {
   const handler = {} as typeof import("../../src/app/admin/page.js")
@@ -83,6 +89,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies AppPageConfig<"/admin/posts">
 }
 
+// Validate ../../src/app/admin/profile/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/admin/profile/page.js")
+  handler satisfies AppPageConfig<"/admin/profile">
+}
+
 // Validate ../../src/app/admin/users/page.tsx
 {
   const handler = {} as typeof import("../../src/app/admin/users/page.js")
@@ -95,16 +107,40 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies AppPageConfig<"/categoria/[slug]">
 }
 
+// Validate ../../src/app/contato/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/contato/page.js")
+  handler satisfies AppPageConfig<"/contato">
+}
+
 // Validate ../../src/app/page.tsx
 {
   const handler = {} as typeof import("../../src/app/page.js")
   handler satisfies AppPageConfig<"/">
 }
 
+// Validate ../../src/app/politica-de-privacidade/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/politica-de-privacidade/page.js")
+  handler satisfies AppPageConfig<"/politica-de-privacidade">
+}
+
 // Validate ../../src/app/post/[slug]/page.tsx
 {
   const handler = {} as typeof import("../../src/app/post/[slug]/page.js")
   handler satisfies AppPageConfig<"/post/[slug]">
+}
+
+// Validate ../../src/app/sobre/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/sobre/page.js")
+  handler satisfies AppPageConfig<"/sobre">
+}
+
+// Validate ../../src/app/termos-de-uso/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/termos-de-uso/page.js")
+  handler satisfies AppPageConfig<"/termos-de-uso">
 }
 
 // Validate ../../src/app/ads.txt/route.ts

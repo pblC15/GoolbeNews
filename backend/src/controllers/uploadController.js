@@ -44,8 +44,13 @@ export async function handleUpload(req, res) {
     } else {
       filename = `${id}.webp`
       const outPath = path.join(baseDir, filename)
+      // ?variant=avatar → foto de perfil: recorte quadrado 400x400 centrado
+      const isAvatar = req.query?.variant === 'avatar'
       const result = await sharp(file.buffer)
-        .resize({ width: 1600, withoutEnlargement: true })
+        .rotate()
+        .resize(isAvatar
+          ? { width: 400, height: 400, fit: 'cover', position: 'attention' }
+          : { width: 1600, withoutEnlargement: true })
         .webp({ quality: 82 })
         .toFile(outPath)
       width = result.width || null

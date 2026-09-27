@@ -1,8 +1,10 @@
 // front/src/app/categoria/[slug]/page.tsx
 import PostCard from '@/components/PostCard'
 import NewsletterSignup from '@/components/NewsletterSignup'
-import AdUnit from '@/components/ads/AdUnit'
-import { AD_SLOTS } from '@/lib/ads'
+// [ADSENSE] Anúncios desativados até a aprovação do Google AdSense. Para reativar,
+// descomente os imports abaixo e os blocos marcados com [ADSENSE] nesta página.
+// import AdUnit from '@/components/ads/AdUnit'
+// import { AD_SLOTS } from '@/lib/ads'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -95,7 +97,7 @@ export default async function CategoryPage({
         </div>
         {posts.length > 6 && (
           <>
-            <AdUnit slot={AD_SLOTS.categoryFeed} className="my-2" />
+            {/* [ADSENSE] <AdUnit slot={AD_SLOTS.categoryFeed} className="my-2" /> */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {posts.slice(6).map((p) => (
                 <PostCard key={p.id} post={p} />
@@ -105,7 +107,7 @@ export default async function CategoryPage({
         )}
       </div>
 
-      {posts.length <= 6 && <AdUnit slot={AD_SLOTS.categoryFeed} />}
+      {/* [ADSENSE] {posts.length <= 6 && <AdUnit slot={AD_SLOTS.categoryFeed} />} */}
 
       <NewsletterSignup
         title={`Não perca nenhuma notícia de ${heading}`}

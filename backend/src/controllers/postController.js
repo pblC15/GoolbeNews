@@ -9,6 +9,7 @@ import {
   incrementPostViews,
 } from '../models/postModel.js'
 import { replaceBlocks, getBlocks } from '../models/postBlockModel.js'
+import { getUserCategories } from '../models/userModel.js'
 
 const postSchema = z.object({
   title: z.string().min(4),
@@ -75,7 +76,7 @@ export async function update(req, res) {
 }
 
 export async function recent(req, res) {
-  const { slug, includeBlocks, q, category, limit } = req.query;
+  const { slug, includeBlocks, q, category, limit, sort } = req.query;
   try {
     if (slug) {
       const post = await getPostBySlugWithCategory(req.db, slug, { onlyPublished: true })
@@ -88,11 +89,12 @@ export async function recent(req, res) {
     }
 
     // COMPLETE o “resto da listagem normal” pra evitar edge-case
-    const lim = Number(limit) > 0 ? Number(limit) : 12
+    const lim = Math.min(Number(limit) > 0 ? Number(limit) : 12, 1000)
     const rows = await listRecentPosts(req.db, {
       limit: lim,
       categorySlug: category || undefined,
       q: q || undefined,
+      sort: sort === 'views' ? 'views' : 'recent',
     })
     return res.json(rows)
   } catch (e) {
@@ -107,13 +109,15 @@ export async function bySlug(req, res) {
     const post = await getPostBySlugWithCategory(req.db, slug, { onlyPublished: true })
     if (!post) return res.status(404).json({ error: 'not found' })
 
-    const blocks = await getBlocks(req.db, post.id)
-    console.log('[API bySlug]', slug, 'retornando blocks:', blocks.length)
+    const [blocks, authorCategories] = await Promise.all([
+      getBlocks(req.db, post.id),
+      getUserCategories(req.db, post.user_id).catch(() => []),
+    ])
 
     // conta a visualização sem atrasar a resposta ao leitor
     incrementPostViews(req.db, post.id).catch(e => console.error('[views] erro ao incrementar', e))
 
-    res.json({ ...post, blocks })
+    res.json({ ...post, author_categories: authorCategories, blocks })
   } catch (e) {
     console.error('[API bySlug] ERRO:', e) // <— adicione isto
     res.status(500).json({ error: 'Erro ao buscar post' })

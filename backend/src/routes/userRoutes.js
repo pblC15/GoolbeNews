@@ -1,10 +1,16 @@
 import { Router } from 'express'
-import { create, getAll, remove, update } from '../controllers/userController.js'
+import { changeMyPassword, create, getAll, getMe, remove, update, updateMe } from '../controllers/userController.js'
 import { requireAdmin, requireAuth } from '../middleware/auth.js'
 const r = Router()
-r.use(requireAuth, requireAdmin)
-r.get('/', getAll)
-r.post('/', create)
-r.put('/:id', update)
-r.delete('/:id', remove)
+
+// "Meu perfil": disponível para qualquer utilizador autenticado (admin ou editor)
+r.get('/me', requireAuth, getMe)
+r.put('/me', requireAuth, updateMe)
+r.put('/me/password', requireAuth, changeMyPassword)
+
+// Gestão de utilizadores: apenas administradores
+r.get('/', requireAuth, requireAdmin, getAll)
+r.post('/', requireAuth, requireAdmin, create)
+r.put('/:id', requireAuth, requireAdmin, update)
+r.delete('/:id', requireAuth, requireAdmin, remove)
 export default r

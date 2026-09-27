@@ -24,6 +24,14 @@ export default function Header() {
       <div className="bg-slate-950 text-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 text-xs">
           <HeaderLiveInfo />
+          {/* Atalho para o painel: aparece apenas para quem já está logado. */}
+          {isAdmin && (
+            <Link href="/admin" className="flex shrink-0 items-center gap-1.5 rounded-full bg-sky-600/90 px-3 py-1 font-semibold text-white hover:bg-sky-500">
+              <HiOutlineViewGridAdd className="h-3.5 w-3.5" /> Editora
+            </Link>
+          )}
+          {/* [AREA-EDITORIAL] Botão escondido temporariamente. Para reativar,
+              troque o bloco acima pelo ternário abaixo:
           {isAdmin ? (
             <Link href="/admin" className="flex shrink-0 items-center gap-1.5 rounded-full bg-sky-600/90 px-3 py-1 font-semibold text-white hover:bg-sky-500">
               <HiOutlineViewGridAdd className="h-3.5 w-3.5" /> Editora
@@ -31,11 +39,12 @@ export default function Header() {
           ) : (
             <Link href="/admin/login" className="shrink-0 text-slate-300 hover:text-white">Área editorial</Link>
           )}
+          */}
         </div>
       </div>
       <header className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-20 max-w-7xl items-center gap-3 px-4">
-          <button aria-label="Abrir categorias" onClick={() => setOpen(true)} className="rounded-full p-2.5 hover:bg-slate-100">
+          <button aria-label="Abrir menu" onClick={() => setOpen(true)} className="rounded-full p-2.5 hover:bg-slate-100">
             <HiMenu className="h-6 w-6" />
           </button>
           <Link href="/" className="mr-auto text-2xl font-black tracking-[-.04em] text-slate-950">

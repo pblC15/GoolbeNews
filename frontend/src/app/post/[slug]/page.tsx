@@ -3,8 +3,11 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import ShareButtons from '@/components/ShareButtons'
 import NewsletterSignup from '@/components/NewsletterSignup'
-import AdUnit from '@/components/ads/AdUnit'
-import { AD_SLOTS } from '@/lib/ads'
+import RecentPostsList from '@/components/RecentPostsList'
+// [ADSENSE] Anúncios desativados até a aprovação do Google AdSense. Para reativar,
+// descomente os imports abaixo e os blocos marcados com [ADSENSE] nesta página.
+// import AdUnit from '@/components/ads/AdUnit'
+// import { AD_SLOTS } from '@/lib/ads'
 
 export const revalidate = 60
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -45,6 +48,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       images: p.cover_url ? [p.cover_url] : undefined,
     },
   }
+}
+
+/** 5 notícias mais recentes pela data de publicação, sem a notícia atual */
+async function getRecent(excludeId?: number) {
+  const r = await fetch(`${API}/api/posts?limit=6&sort=recent`, { next: { revalidate } })
+  const rows = r.ok ? await r.json() : []
+  return (Array.isArray(rows) ? rows : []).filter((p: any) => p.id !== excludeId).slice(0, 5)
 }
 
 async function getRelated(categorySlug?: string, excludeId?: number) {
@@ -141,15 +151,30 @@ function Blocks({ blocks = [] }: { blocks?: any[] }) {
   )
 }
 
+/** Foto do autor; sem foto, mostra as iniciais do nome */
+function AuthorAvatar({ name, url, size }: { name: string; url?: string | null; size: 'sm' | 'lg' }) {
+  const cls = size === 'sm' ? 'h-9 w-9 text-xs' : 'h-16 w-16 text-lg'
+  if (url) return <img src={url} alt="" className={`${cls} shrink-0 rounded-full object-cover ring-2 ring-white`} />
+  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+  return (
+    <span aria-hidden="true" className={`${cls} grid shrink-0 place-items-center rounded-full bg-slate-900 font-black text-white`}>
+      {initials || 'G'}
+    </span>
+  )
+}
+
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const p = await getPost(slug)
   if (!p) notFound()
-  const related = await getRelated(p.category_slug, p.id)
+  const [related, recent] = await Promise.all([getRelated(p.category_slug, p.id), getRecent(p.id)])
   const published = p.published_at
     ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(p.published_at))
     : ''
   const postUrl = `${SITE_URL}/post/${p.slug}`
+  const authorName = p.author_name || 'Redação GoolbeNews'
+  const authorCategories: { id: number; name: string; slug: string }[] = Array.isArray(p.author_categories) ? p.author_categories : []
+  const hasAuthorInfo = !!(p.author_profession || p.author_bio || authorCategories.length || p.author_avatar)
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -159,7 +184,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     image: p.cover_url ? [p.cover_url] : undefined,
     datePublished: p.published_at || undefined,
     dateModified: p.updated_at || p.published_at || undefined,
-    author: [{ '@type': 'Person', name: p.author_name || 'Redação GoolbeNews' }],
+    author: [{
+      '@type': 'Person',
+      name: authorName,
+      jobTitle: p.author_profession || undefined,
+      description: p.author_bio || undefined,
+      image: p.author_avatar || undefined,
+    }],
     publisher: {
       '@type': 'Organization',
       name: 'GoolbeNews',
@@ -178,9 +209,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         </Link>
         <h1 className="mt-4 text-4xl font-black leading-[1.05] tracking-[-.035em] text-slate-950 sm:text-6xl">{p.title}</h1>
         {p.excerpt && <p className="mt-5 text-xl leading-8 text-slate-600">{p.excerpt}</p>}
-        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-4 text-sm text-slate-500">
-          <span>Por <strong className="text-slate-800">{p.author_name || 'Redação GoolbeNews'}</strong></span>
-          {published && <span>{published}</span>}
+        <div className="mt-6 flex items-center gap-3 border-t pt-4 text-sm text-slate-500">
+          <AuthorAvatar name={authorName} url={p.author_avatar} size="sm" />
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5">
+            <span>
+              Por <strong className="text-slate-800">{authorName}</strong>
+              {p.author_profession && <span className="text-slate-400">, {p.author_profession}</span>}
+            </span>
+            {published && <time dateTime={p.published_at}>{published}</time>}
+          </div>
         </div>
         <ShareButtons url={postUrl} title={p.title} className="mt-5 border-t pt-5" />
       </header>
@@ -192,19 +229,51 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       )}
 
       <div className="mx-auto max-w-3xl py-8">
-        <AdUnit slot={AD_SLOTS.postTop} layout="in-article" className="my-6" />
+        {/* [ADSENSE] <AdUnit slot={AD_SLOTS.postTop} layout="in-article" className="my-6" /> */}
         {p.blocks?.length ? <Blocks blocks={p.blocks} /> : <p className="text-slate-500">Conteúdo indisponível.</p>}
 
         <ShareButtons url={postUrl} title={p.title} className="mt-8 border-t pt-6" />
 
+        {/* Sessão do autor */}
+        {hasAuthorInfo && (
+          <aside aria-label="Sobre o autor" className="mt-10 flex gap-4 rounded-2xl bg-slate-100/70 p-5 sm:gap-5 sm:p-6">
+            <AuthorAvatar name={authorName} url={p.author_avatar} size="lg" />
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-500">Escrito por</p>
+              <p className="text-lg font-black leading-tight text-slate-950">{authorName}</p>
+              {p.author_profession && <p className="text-sm font-semibold text-sky-700">{p.author_profession}</p>}
+              {p.author_bio && <p className="mt-2 text-sm leading-6 text-slate-600">{p.author_bio}</p>}
+              {authorCategories.length > 0 && (
+                <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  <span className="mr-1 text-xs text-slate-500">Cobre:</span>
+                  {authorCategories.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`/categoria/${c.slug}`}
+                      className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200 hover:text-sky-700 hover:ring-sky-300"
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </aside>
+        )}
+
+        {/* mesma newsletter da home (validação, erros e animação de sucesso) */}
         <NewsletterSignup
           className="mt-10"
+          variant="dark"
           title="Gostou desta notícia?"
           description="Inscreva-se para receber as próximas publicações do GoolbeNews diretamente no seu email."
           source={`post-${p.slug}`}
         />
 
-        <AdUnit slot={AD_SLOTS.postBottom} layout="in-article" className="mt-8" />
+        {/* [ADSENSE] <AdUnit slot={AD_SLOTS.postBottom} layout="in-article" className="mt-8" /> */}
+
+        {/* Mais recentes vem sempre antes de Notícias relacionadas */}
+        <RecentPostsList posts={recent} className="mt-14" />
 
         {related.length > 0 && (
           <section className="mt-14 border-t pt-8">

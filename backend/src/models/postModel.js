@@ -108,7 +108,9 @@ export async function updatePost(db, id, fields = {}) {
 /** Retorna post + nomes de categoria (padrão: só publicados) */
 export async function getPostBySlugWithCategory(db, slug, { onlyPublished = true } = {}) {
   const [rows] = await db.query(
-    `SELECT p.*, c.slug AS category_slug, c.name AS category_name, u.name AS author_name
+    `SELECT p.*, c.slug AS category_slug, c.name AS category_name,
+            u.name AS author_name, u.avatar_url AS author_avatar,
+            u.profession AS author_profession, u.bio AS author_bio
        FROM posts p
   LEFT JOIN categories c ON c.id = p.category_id
   LEFT JOIN users u ON u.id = p.user_id
@@ -119,9 +121,13 @@ export async function getPostBySlugWithCategory(db, slug, { onlyPublished = true
   return rows[0] || null
 }
 
-/** Lista recentes com filtros (só publicados) */
-export async function listRecentPosts(db, { limit = 12, categorySlug, q } = {}) {
-  let sql = `SELECT p.id, p.title, p.slug, p.cover_url, p.excerpt, p.published_at,
+/**
+ * Lista notícias publicadas com filtros.
+ * sort = 'recent' (padrão): mais recentes pela data de publicação
+ * sort = 'views': mais visualizadas (coluna posts.views); em empate, a mais recente primeiro
+ */
+export async function listRecentPosts(db, { limit = 12, categorySlug, q, sort = 'recent' } = {}) {
+  let sql = `SELECT p.id, p.title, p.slug, p.cover_url, p.excerpt, p.published_at, p.views,
                     c.slug AS category_slug, c.name AS category_name
                FROM posts p
           LEFT JOIN categories c ON c.id = p.category_id
@@ -131,7 +137,9 @@ export async function listRecentPosts(db, { limit = 12, categorySlug, q } = {}) 
   if (categorySlug) { sql += ' AND c.slug = ?'; params.push(categorySlug) }
   if (q) { sql += ' AND (p.title LIKE ? OR p.excerpt LIKE ?)'; params.push(`%${q}%`, `%${q}%`) }
 
-  sql += ' ORDER BY p.published_at DESC, p.id DESC LIMIT ?'
+  sql += sort === 'views'
+    ? ' ORDER BY p.views DESC, p.published_at DESC, p.id DESC LIMIT ?'
+    : ' ORDER BY p.published_at DESC, p.id DESC LIMIT ?'
   params.push(Number(limit))
 
   const [rows] = await db.query(sql, params)

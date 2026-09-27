@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { INSTITUTIONAL_LINKS } from '@/lib/site'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_BASE ?? 'http://localhost:3000'
 const API = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
@@ -20,6 +21,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticEntries: MetadataRoute.Sitemap = [
     { url: SITE_URL, changeFrequency: 'hourly', priority: 1 },
+    ...INSTITUTIONAL_LINKS.map((l) => ({
+      url: `${SITE_URL}${l.href}`,
+      changeFrequency: 'yearly' as const,
+      priority: 0.3,
+    })),
   ]
 
   const categoryEntries: MetadataRoute.Sitemap = (Array.isArray(categories) ? categories : []).map((c: any) => ({
