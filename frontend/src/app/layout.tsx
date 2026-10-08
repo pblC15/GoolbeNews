@@ -53,6 +53,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
           crossOrigin="anonymous"
         />
+        <Script
+          id="monetag-zone-11985016"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='11985016',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+          }}
+        />
         <Header />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
         <Footer />
