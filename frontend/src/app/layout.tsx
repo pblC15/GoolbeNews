@@ -60,6 +60,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `(function(s){s.dataset.zone='11985016',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
           }}
         />
+        <Script
+          id="monetag-vignette-11985165"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(s){s.dataset.zone='11985165',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+          }}
+        />
         <Header />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
         <Footer />
