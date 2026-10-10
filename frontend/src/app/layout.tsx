@@ -45,32 +45,51 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col bg-gray-50">
-        <Script
-          id="adsbygoogle-loader"
-          async
-          strategy="afterInteractive"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-          crossOrigin="anonymous"
-        />
-        <Script
-          id="monetag-zone-11985016"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(s){s.dataset.zone='11985016',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
-          }}
-        />
-        {/* <Script
-          id="monetag-vignette-11985165"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(s){s.dataset.zone='11985165',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
-          }}
-        /> */}
-        <Header />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">{children}</main>
-        <Footer />
-      </body>
+    <body className="flex min-h-screen flex-col bg-gray-50">
+      {/* Google AdSense */}
+      <Script
+        id="adsbygoogle-loader"
+        async
+        strategy="afterInteractive"
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
+        crossOrigin="anonymous"
+      />
+
+      {/* Monetag - Zona 11985016 */}
+      <Script
+        id="monetag-zone-11985016"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(s){s.dataset.zone='11985016',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+        }}
+      />
+
+      {/* Monetag - Nova zona 11996573 */}
+      <Script
+        id="monetag-zone-11996573"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(s){s.dataset.zone='11996573',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+        }}
+      />
+
+      {/* Monetag - Vignette Banner desativado */}
+      {/*
+      <Script
+        id="monetag-vignette-11985165"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `(function(s){s.dataset.zone='11985165',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+        }}
+      />
+      */}
+
+      <Header />
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+        {children}
+      </main>
+      <Footer />
+    </body>
     </html>
   );
 }
