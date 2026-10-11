@@ -65,13 +65,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       />
 
       {/* Monetag - Nova zona 11996573 */}
-      <Script
+      {/* <Script
         id="monetag-zone-11996573"
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `(function(s){s.dataset.zone='11996573',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
         }}
-      />
+      /> */}
 
       {/* Monetag - Vignette Banner desativado */}
       {/*
