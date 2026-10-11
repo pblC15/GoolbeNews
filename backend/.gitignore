@@ -2,3 +2,7 @@ node_modules
 .env
 database.sql
 migrations
+# Versionar a migração do dashboard.
+!migrations/
+migrations/*
+!migrations/20261011_dashboard.sql

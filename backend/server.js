@@ -12,6 +12,7 @@ import uploadRoutes from './src/routes/uploadRoutes.js'
 import userRoutes from './src/routes/userRoutes.js'
 import newsletterRoutes from './src/routes/newsletterRoutes.js'
 import contactRoutes from './src/routes/contactRoutes.js'
+import dashboardRoutes from './src/routes/dashboardRoutes.js'
 
 dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
@@ -55,6 +56,7 @@ app.use('/api/upload', uploadRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/newsletter', newsletterRoutes)
 app.use('/api/contact', contactRoutes)
+app.use('/api/dashboard', dashboardRoutes)
 
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`))

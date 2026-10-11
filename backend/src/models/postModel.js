@@ -159,7 +159,21 @@ export async function listAdminPosts(db) {
 
 /** Incrementa o contador de visualizações de um post (fire-and-forget) */
 export async function incrementPostViews(db, id) {
-  await db.query('UPDATE posts SET views = views + 1 WHERE id = ?', [id])
+  const connection = await db.getConnection()
+  try {
+    await connection.beginTransaction()
+    const [result] = await connection.query('UPDATE posts SET views = views + 1 WHERE id = ?', [id])
+    if (result.affectedRows) {
+      await connection.query(`INSERT INTO site_view_daily (view_date, views) VALUES (UTC_DATE(), 1)
+        ON DUPLICATE KEY UPDATE views = views + 1`)
+    }
+    await connection.commit()
+  } catch (error) {
+    await connection.rollback()
+    throw error
+  } finally {
+    connection.release()
+  }
 }
 
 export async function getPostByIdAdmin(db, id) {
