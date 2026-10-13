@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import ShareButtons from '@/components/ShareButtons'
 import NewsletterSignup from '@/components/NewsletterSignup'
 import RecentPostsList from '@/components/RecentPostsList'
+import SimuladorHabitacao from '@/components/SimuladorHabitacao'
 // [ADSENSE] Anúncios desativados até a aprovação do Google AdSense. Para reativar,
 // descomente os imports abaixo e os blocos marcados com [ADSENSE] nesta página.
 // import AdUnit from '@/components/ads/AdUnit'
@@ -231,6 +232,11 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div className="mx-auto max-w-3xl py-8">
         {/* [ADSENSE] <AdUnit slot={AD_SLOTS.postTop} layout="in-article" className="my-6" /> */}
         {p.blocks?.length ? <Blocks blocks={p.blocks} /> : <p className="text-slate-500">Conteúdo indisponível.</p>}
+
+        {/* Simulador exclusivo da reportagem sobre primeira habitação em 2027. */}
+        {slug === 'comprar-casa-em-portugal-em-2027-jovens-poderao-financiar-100porcento-do-imovel-e-escapar-de-impostos' && (
+          <SimuladorHabitacao />
+        )}
 
         <ShareButtons url={postUrl} title={p.title} className="mt-8 border-t pt-6" />
 
